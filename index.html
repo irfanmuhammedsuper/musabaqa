@@ -160,7 +160,7 @@ const cnt=n=>winners.filter(w=>w["WINNER_"+n+"_NAME"]).length;
 const stat=(i,n,l)=>`<div class="card stat"><div class="ico">${i}</div><div><b>${n}</b><span>${l}</span></div></div>`;
 function dashboard(){
  const a=cnt(1),b=cnt(2),c=cnt(3),done=winners.length,pct=items.length?Math.round(done/items.length*100):0;
- $("page").innerHTML=`<div class="hero"><h2>${esc(settings.EVENT_NAME||"MUSABAQA")} ${esc(settings.EVENT_YEAR||"")}</h2><p>${esc(settings.COLLEGE_NAME||"Winners &amp; Poster Manager")} — ${done} of ${items.length} items announced (${pct}%)</p><div class="acts"><button class="btn" onclick="openForm()">${ic("plus")} Add winners</button><button class="btn" onclick="pickPoster()">${ic("image")} Create poster</button></div></div>
+ $("page").innerHTML=`<div class="hero"><h2>${esc(settings.EVENT_NAME||"MUSABAQA")} ${esc(settings.EVENT_YEAR||"")}</h2><p>${esc(settings.COLLEGE_NAME||"Winners ; Poster Manager")} — ${done} of ${items.length} items announced (${pct}%)</p><div class="acts"><button class="btn" onclick="openForm()">${ic("plus")} Add winners</button><button class="btn" onclick="pickPoster()">${ic("image")} Create poster</button></div></div>
  <div class="grid g4">${stat("📋",items.length,"ITEMS")}${stat("🏆",a+b+c,"WINNERS")}${stat("🥇",a,"1ST PLACE")}${stat("🖼",posters.length,"POSTERS")}</div>
  <h3 style="margin:22px 0 10px">Recently announced</h3><div class="grid g3 w">${winners.slice().sort((x,y)=>String(y.CREATED_AT).localeCompare(String(x.CREATED_AT))).slice(0,6).map(wCard).join("")||'<div class="empty card" style="grid-column:1/-1">No winners yet. Add your first result.</div>'}</div>`}
 
@@ -283,8 +283,7 @@ async function poster(code,save=true){const w=wmap[code];if(!w)return toast("Add
  const tx="ഒരായിരം അഭിനന്ദനങ്ങൾ";fit(c,tx,790,84,30,800);c.lineJoin="round";c.strokeStyle="#fff";c.lineWidth=9;c.strokeText(tx,485,1056);const tg=c.createLinearGradient(0,1020,0,1090);tg.addColorStop(0,"#d81b60");tg.addColorStop(1,"#5b1a8f");c.fillStyle=tg;c.fillText(tx,485,1056);
  if(settings.COLLEGE_NAME){c.fillStyle="#5b1a8f";fit(c,settings.COLLEGE_NAME,700,20,12,600);c.fillText(settings.COLLEGE_NAME,485,1118)}
  c.save();c.shadowColor="rgba(0,0,0,.3)";c.shadowBlur=14;c.shadowOffsetY=4;const fg=c.createLinearGradient(0,1150,0,1212);fg.addColorStop(0,"#0b7a74");fg.addColorStop(1,"#094743");c.fillStyle=fg;rrp(c,150,1150,670,62,31);c.fill();c.restore();c.strokeStyle="#f7b500";c.lineWidth=3;rrp(c,150,1150,670,62,31);c.stroke();
- const ft=(settings.FOOTER_TEXT&&settings.FOOTER_TEXT!=="MUSABAQA WINNERS")?settings.FOOTER_TEXT:"ടീം മുസാബഖ കമ്പിൽ
-റെയ്ഞ്ച്";c.fillStyle="#ffe08a";fit(c,ft,620,34,16);c.fillText(ft,485,1182);
+ const ft=(settings.FOOTER_TEXT&&settings.FOOTER_TEXT!=="MUSABAQA WINNERS")?settings.FOOTER_TEXT:"ടീം മുസാബഖ കമ്പിൽ റെയ്ഞ്ച്";c.fillStyle="#ffe08a";fit(c,ft,620,34,16);c.fillText(ft,485,1182);
  const act=[1,2,3].map(n=>({position:POS[n-1],name:w["WINNER_"+n+"_NAME"],madrasa:w["WINNER_"+n+"_MADRASA"],photo:w["WINNER_"+n+"_CANDIDATE_PHOTO"],n})).filter(x=>x.name);
  window.__d=cv.toDataURL("image/png");window.__it=it;window.__w=act;
  openModal(`<div class="head" style="margin:0 0 12px"><div><h2 style="margin:0">Poster ready</h2><p>${esc(it.item)} • ${esc(it.code)}</p></div><button class="btn ic" onclick="closeModal()">${ic("x")}</button></div><img class="poster" src="${window.__d}" alt=""><div class="acts" style="margin-top:14px"><button class="btn pri" onclick="dlPoster()">${ic("dl")} Download</button><button class="btn ok" onclick="shPoster()">${ic("share")} Share</button><button class="btn" onclick="waPoster()">${ic("wa")} WhatsApp</button></div>`);
