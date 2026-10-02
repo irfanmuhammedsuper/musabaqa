@@ -54,7 +54,7 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;bo
 </style>
 </head>
 <body>
-<div id="loginView" class="login hidden"><div class="lb"><img id="loginLogo" alt=""><h2>MUSABAQA WINNERS</h2><p>Admin;Poster Manager</p>
+<div id="loginView" class="login hidden"><div class="lb"><img id="loginLogo" alt=""><h2>MUSABAQA WINNERS</h2><p>Admin &amp; Poster Manager</p>
 <form id="loginForm"><div class="fld"><label>USERNAME</label><input class="in" id="lu" autocomplete="username" required></div><div class="fld"><label>PASSWORD</label><input class="in" id="lp" type="password" autocomplete="current-password" required></div><button class="btn pri" id="lbtn" style="width:100%;margin-top:6px">Sign in</button></form></div></div>
 
 <div id="appView" class="hidden">
@@ -73,7 +73,7 @@ const I={home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',list:'<path d="M8 6h13M8
 const ic=(n,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
 const NAV=[["dashboard","home","Home"],["items","list","Items"],["winners","trophy","Winners"],["posters","image","Posters"],["settings","gear","Settings"]];
 const $=id=>document.getElementById(id);
-const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":";","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const q=v=>esc(JSON.stringify(String(v)));
 let token=localStorage.getItem("musabaqa_session")||"",items=[],winners=[],madrasas=[],posters=[],settings={},page="dashboard",editId=null,selItem=null,wmap={};
 const photos={1:"",2:"",3:""};
@@ -188,11 +188,11 @@ const blk=n=>`<div class="card"><h3 style="margin:0 0 10px">${MEDAL[n-1]} ${POS[
 function choices(){const s=($("wis").value||"").toLowerCase();$("ch").innerHTML=items.filter(x=>[x.item,x.code,x.category,x.section].join(" ").toLowerCase().includes(s)).slice(0,8).map(x=>`<div class="pick" onclick="chooseItem(${q(x.code)})"><b>${esc(x.item)}</b> — ${esc(x.code)} ${wmap[x.code]?'<span class="tag done">announced</span>':""}<div class="mu">${esc(x.category)} • ${esc(x.section)} • ${esc(x.type)}</div></div>`).join("")}
 function chooseItem(c){if(wmap[c]&&!editId)return editWinner(wmap[c].ID);selItem=items.find(x=>String(x.code)===String(c));$("wis").value=selItem.item+" — "+selItem.code;$("ch").innerHTML="";meta()}
 function meta(){$("sm").innerHTML=selItem?`<div class="meta">${[["CATEGORY",selItem.category],["SECTION",selItem.section],["TYPE",selItem.type],["CODE",selItem.code],["LIMIT",selItem.limit]].map(m=>`<div><small>${m[0]}</small><b>${esc(m[1])}</b></div>`).join("")}</div>`:""}
-function mdet(n){const v=$("wm"+n).value,m=madrasas.find(x=>String(x.id)===v);$("md"+n).innerHTML=m?`Reg.No: <b>${esc(m.regNo||"—")}</b><br>${esc(m.address||"")}`:(v.startsWith("txt:")?"":"")}
+function mdet(n){const v=$("wm"+n).value,m=madrasas.find(x=>String(x.id)===v);$("md"+n).innerHTML=m?`Reg.No: <b>${esc(m.regNo||"—")}</b><br>${esc(m.address||"")}`:(v.startsWith("txt:")?"Taken from Candidates sheet (not in Madrasa list)":"")}
 function setMad(n,name){const sel=$("wm"+n);sel.querySelectorAll("option[data-x]").forEach(o=>o.remove());name=String(name||"").trim();if(!name){sel.value="";mdet(n);return}
  const P=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,""),S=s=>P(String(s).toLowerCase().replace(/madrass?a+h?/g,"")),p=P(name),s=S(name);
  const m=madrasas.find(x=>P(x.madrasa)===p)||(s&&madrasas.find(x=>S(x.madrasa)===s))||(s.length>3&&madrasas.find(x=>{const y=S(x.madrasa);return y.length>3&&(y.includes(s)||s.includes(y))}));
- if(m)sel.value=m.id;else{const o=document.createElement("option");o.value="txt:"+name;o.textContent=name+" ";o.dataset.x=1;sel.appendChild(o);sel.value=o.value}
+ if(m)sel.value=m.id;else{const o=document.createElement("option");o.value="txt:"+name;o.textContent=name+" (from candidates)";o.dataset.x=1;sel.appendChild(o);sel.value=o.value}
  mdet(n)}
 function showPv(n){$("pv"+n).innerHTML=photos[n]?`<img src="${photos[n]}" alt=""><button class="btn sm" onclick="photos[${n}]='';showPv(${n})">Remove</button>`:""}
 async function pickPhoto(n,inp){const f=inp.files[0];inp.value="";if(!f)return;if(!f.type.startsWith("image/"))return toast("Please choose an image.");
@@ -240,61 +240,49 @@ const FN='"Anek Malayalam","Noto Sans Malayalam","Manjari",Arial,sans-serif';
 function fit(c,t,mw,st,mn,w=800){let s=st;while(s>mn){c.font=`${w} ${s}px ${FN}`;if(c.measureText(t).width<=mw)return s;s-=1}c.font=`${w} ${mn}px ${FN}`;return mn}
 function rrp(c,x,y,w,h,r){c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)}
 function cover(c,im,x,y,w,h){const k=Math.max(w/im.width,h/im.height),iw=im.width*k,ih=im.height*k;c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.drawImage(im,x+(w-iw)/2,y+(h-ih)/2,iw,ih);c.restore()}
-function confetti(c,rnd){const cols=["#e91e63","#ff9800","#26a69a","#7e57c2","#ffd600","#29b6f6","#ef5350","#66bb6a"];
- for(let i=0;i<75;i++){const x=540+rnd()*430,y=40+rnd()*450,dx=x-597,dy=y-362;if(dx*dx+dy*dy<120*120)continue;
-  c.save();c.translate(x,y);c.rotate(rnd()*6.28);c.fillStyle=cols[i%cols.length];const t=i%3;
-  if(t===0)c.fillRect(-7,-3,14,6);else if(t===1){c.beginPath();c.arc(0,0,4,0,7);c.fill()}else{c.strokeStyle=c.fillStyle;c.lineWidth=3;c.beginPath();c.moveTo(-9,0);c.quadraticCurveTo(-4,-9,1,0);c.quadraticCurveTo(6,9,12,0);c.stroke()}
-  c.restore()}}
-function ribbon(c){const p=new Path2D("M900 -10 C760 50 600 40 540 120 C500 175 520 215 590 225"),g=c.createLinearGradient(480,0,900,230);
- g.addColorStop(0,"#8a5a00");g.addColorStop(.35,"#f7d774");g.addColorStop(.6,"#b8860b");g.addColorStop(1,"#f3cf62");
- c.save();c.lineCap="round";c.lineJoin="round";c.strokeStyle="#6e4600";c.lineWidth=76;c.stroke(p);c.strokeStyle=g;c.lineWidth=66;c.stroke(p);
- c.strokeStyle="rgba(255,243,176,.75)";c.lineWidth=9;c.translate(-12,-10);c.stroke(p);c.restore()}
-function balloon(c,x,y,rx,ry,col,hi){c.save();c.strokeStyle="#666";c.lineWidth=2;c.beginPath();c.moveTo(x,y+ry);c.bezierCurveTo(x-20,y+ry+40,x+20,y+ry+80,x-6,y+ry+140);c.stroke();
- const g=c.createRadialGradient(x-rx*.35,y-ry*.4,5,x,y,ry*1.1);g.addColorStop(0,hi);g.addColorStop(1,col);c.fillStyle=g;c.beginPath();c.ellipse(x,y,rx,ry,0,0,7);c.fill();
- c.fillStyle=col;c.beginPath();c.moveTo(x,y+ry-2);c.lineTo(x-9,y+ry+10);c.lineTo(x+9,y+ry+10);c.closePath();c.fill();c.restore()}
-function sticker(c,cx,cy,r,l1,l2){c.save();c.shadowColor="rgba(0,0,0,.28)";c.shadowBlur=18;c.shadowOffsetY=6;
- const g=c.createRadialGradient(cx-30,cy-40,10,cx,cy,r);g.addColorStop(0,"#ff2b2b");g.addColorStop(1,"#c20000");c.fillStyle=g;c.beginPath();c.arc(cx,cy,r,0,7);c.fill();c.restore();
- c.save();c.beginPath();c.arc(cx,cy,r,0,7);c.clip();c.strokeStyle="#ff7a7a";c.lineWidth=3;c.beginPath();c.arc(cx,cy,r-5,0,7);c.stroke();
- const A=[cx+.5*r,cy+.9*r],B=[cx+.9*r,cy+.5*r],C=[cx+.4*r,cy+.4*r];
- c.fillStyle="#fff";c.beginPath();c.moveTo(A[0],A[1]);c.lineTo(B[0],B[1]);c.lineTo(cx+1.3*r,cy+.5*r);c.lineTo(cx+1.3*r,cy+1.3*r);c.lineTo(cx+.5*r,cy+1.3*r);c.closePath();c.fill();
- const fg=c.createLinearGradient(C[0],C[1],cx+.7*r,cy+.7*r);fg.addColorStop(0,"#ffffff");fg.addColorStop(1,"#ffb3b3");c.fillStyle=fg;c.beginPath();c.moveTo(A[0],A[1]);c.lineTo(B[0],B[1]);c.lineTo(C[0],C[1]);c.closePath();c.fill();c.restore();
+function goldG(c,x0,y0,x1,y1){const g=c.createLinearGradient(x0,y0,x1,y1);[[0,"#fff3b0"],[.3,"#f5c542"],[.55,"#b8860b"],[.8,"#f7d774"],[1,"#9a6b00"]].forEach(a=>g.addColorStop(a[0],a[1]));return g}
+function sparkle(c,x,y,r,col){c.save();c.translate(x,y);c.fillStyle=col;c.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4,q=i%2?r*.28:r;c.lineTo(Math.cos(a)*q,Math.sin(a)*q)}c.closePath();c.fill();c.restore()}
+function burst(c,cx,cy,r,n){c.beginPath();for(let i=0;i<n*2;i++){const a=i*Math.PI/n,q=i%2?r*.86:r;c.lineTo(cx+Math.cos(a)*q,cy+Math.sin(a)*q)}c.closePath()}
+function posterBg(c,rnd){c.fillStyle="#fffaf2";c.fillRect(0,0,970,1281);
+ [[60,140,120,"#ffe3ef"],[920,720,170,"#dff6f4"],[70,1010,150,"#fff0cc"],[520,70,90,"#efe4ff"]].forEach(a=>{c.fillStyle=a[3];c.beginPath();c.arc(a[0],a[1],a[2],0,7);c.fill()});
+ c.fillStyle="rgba(91,26,143,.06)";for(let y=30;y<1280;y+=34)for(let x=((y-30)/34%2)*17+20;x<970;x+=34){c.beginPath();c.arc(x,y,2.2,0,7);c.fill()}
+ c.save();c.lineCap="round";[["#00a7a0",90,"M1000 -20 C860 30 720 20 640 105 C590 160 610 205 675 212"],["#d81b60",56,"M1000 25 C880 75 765 62 705 128 C665 175 690 198 730 204"],["#f7b500",30,"M1000 75 C915 105 825 92 782 135"]].forEach(a=>{const p=new Path2D(a[2]);c.strokeStyle=a[0];c.lineWidth=a[1];c.stroke(p);c.strokeStyle="rgba(255,255,255,.35)";c.lineWidth=a[1]*.14;c.save();c.translate(-3,-a[1]*.22);c.stroke(p);c.restore()});c.restore();
+ const cols=["#d81b60","#f7b500","#00a7a0","#7e57c2","#ff7043","#29b6f6"];
+ for(let i=0;i<80;i++){const x=480+rnd()*490,y=230+rnd()*330,dx=x-655,dy=y-335;if(dx*dx+dy*dy<125*125)continue;c.save();c.translate(x,y);c.rotate(rnd()*6.28);c.fillStyle=cols[i%6];if(i%3)c.fillRect(-6,-3,12,6);else{c.beginPath();c.arc(0,0,4,0,7);c.fill()}c.restore()}
+ for(let i=0;i<14;i++){c.fillStyle=cols[i%6];c.globalAlpha=.7;c.save();c.translate(rnd()*970,820+rnd()*440);c.rotate(rnd()*6);c.fillRect(-5,-2.5,10,5);c.restore();c.globalAlpha=1}
+ sparkle(c,905,330,26,"#f7b500");sparkle(c,880,470,18,"#d81b60");sparkle(c,925,590,22,"#00a7a0");sparkle(c,50,70,20,"#7e57c2");sparkle(c,40,520,14,"#f7b500");sparkle(c,935,1000,18,"#d81b60");sparkle(c,40,1180,22,"#00a7a0")}
+function badge(c,cx,cy,r,l1,l2){c.save();c.shadowColor="rgba(60,20,90,.35)";c.shadowBlur=18;c.shadowOffsetY=6;c.fillStyle=goldG(c,cx-r,cy-r,cx+r,cy+r);burst(c,cx,cy,r,22);c.fill();c.restore();
+ const g=c.createLinearGradient(cx-r,cy-r,cx+r,cy+r);g.addColorStop(0,"#8e24aa");g.addColorStop(1,"#d81b60");c.fillStyle=g;c.beginPath();c.arc(cx,cy,r-14,0,7);c.fill();
+ c.strokeStyle="rgba(255,255,255,.7)";c.lineWidth=2;c.setLineDash([6,6]);c.beginPath();c.arc(cx,cy,r-24,0,7);c.stroke();c.setLineDash([]);
  c.save();c.fillStyle="#fff";c.textAlign="center";c.textBaseline="middle";c.shadowColor="rgba(0,0,0,.3)";c.shadowBlur=4;c.shadowOffsetY=2;
- if(l2){const s=Math.min(fit(c,l1,r*1.5,46,18),fit(c,l2,r*1.5,46,18));c.font=`800 ${s}px ${FN}`;c.fillText(l1,cx-4,cy-s*.55);c.fillText(l2,cx-4,cy+s*.6)}
- else{const s=fit(c,l1,r*1.5,46,18);c.fillText(l1,cx-4,cy)}c.restore()}
-function medal(c,cx,cy,n){const P=[["#fff1a8","#e0a800","#9a6b00","#fff7cf"],["#ffffff","#c3cbd1","#7d8890","#f4f6f8"],["#f3c29c","#b8693a","#7a3f1d","#ffe3cf"]][n-1];
- c.save();const rg=c.createLinearGradient(cx-40,cy,cx+40,cy+90);rg.addColorStop(0,"#e8252f");rg.addColorStop(1,"#8f0a14");c.fillStyle=rg;
- c.beginPath();c.moveTo(cx-40,cy+25);c.lineTo(cx-2,cy+38);c.lineTo(cx-14,cy+90);c.lineTo(cx-26,cy+75);c.lineTo(cx-46,cy+86);c.closePath();c.fill();
- c.beginPath();c.moveTo(cx+40,cy+25);c.lineTo(cx+2,cy+38);c.lineTo(cx+14,cy+90);c.lineTo(cx+26,cy+75);c.lineTo(cx+46,cy+86);c.closePath();c.fill();
- c.shadowColor="rgba(0,0,0,.3)";c.shadowBlur=8;c.shadowOffsetY=3;c.fillStyle=P[1];for(let i=0;i<28;i++){const a=i/28*6.283;c.beginPath();c.arc(cx+Math.cos(a)*46,cy+Math.sin(a)*46,5,0,7);c.fill()}
- const g=c.createRadialGradient(cx-14,cy-16,4,cx,cy,48);g.addColorStop(0,P[0]);g.addColorStop(.6,P[1]);g.addColorStop(1,P[2]);c.fillStyle=g;c.beginPath();c.arc(cx,cy,46,0,7);c.fill();c.shadowColor="transparent";
- c.strokeStyle=P[3];c.lineWidth=3;c.beginPath();c.arc(cx,cy,35,0,7);c.stroke();
- c.fillStyle=P[3];c.textAlign="center";c.textBaseline="middle";c.font=`800 50px ${FN}`;c.shadowColor="rgba(0,0,0,.3)";c.shadowBlur=3;c.shadowOffsetY=2;c.fillText(n,cx,cy+3);c.restore()}
+ if(l2){const s=Math.min(fit(c,l1,r*1.3,42,16),fit(c,l2,r*1.3,42,16));c.font=`800 ${s}px ${FN}`;c.fillText(l1,cx,cy-s*.55);c.fillText(l2,cx,cy+s*.6)}else{fit(c,l1,r*1.3,42,16);c.fillText(l1,cx,cy)}c.restore()}
+async function card(c,n,x,y,w,h,nm,ph,md){const M=[["#fff3b0","#f5b400","#9a6b00","#3a2500"],["#ffffff","#b8c2ca","#7d8890","#26323a"],["#f6c9a6","#c27a45","#7a3f1d","#3d1c08"]][n-1],cx=x+w/2;
+ c.save();c.shadowColor="rgba(60,20,90,.3)";c.shadowBlur=22;c.shadowOffsetY=8;c.fillStyle=M[1];rrp(c,x-9,y-9,w+18,h+18,30);c.fill();c.restore();
+ c.fillStyle="#fff";rrp(c,x-5,y-5,w+10,h+10,27);c.fill();
+ c.save();rrp(c,x,y,w,h,22);c.clip();c.fillStyle="#efe9f6";c.fillRect(x,y,w,h);if(nm&&ph){const im=await loadImg(ph);if(im)cover(c,im,x,y,w,h)}c.restore();
+ const by=y+h,g=c.createLinearGradient(cx-34,by-34,cx+34,by+34);g.addColorStop(0,M[0]);g.addColorStop(.5,M[1]);g.addColorStop(1,M[2]);
+ c.save();c.shadowColor="rgba(0,0,0,.35)";c.shadowBlur=10;c.shadowOffsetY=3;c.fillStyle=g;burst(c,cx,by,38,16);c.fill();c.restore();
+ c.save();c.strokeStyle=M[3];c.globalAlpha=.3;c.lineWidth=2;c.beginPath();c.arc(cx,by,27,0,7);c.stroke();c.restore();
+ c.fillStyle=M[3];c.textAlign="center";c.textBaseline="middle";c.font=`800 30px ${FN}`;c.fillText(n,cx,by+2);
+ if(nm){c.fillStyle="#b0123f";fit(c,nm,250,23,12);c.fillText(nm,cx,by+50);c.fillStyle="#222";fit(c,md||"",250,17,10,700);c.fillText(md||"",cx,by+77)}}
 async function poster(code,save=true){const w=wmap[code];if(!w)return toast("Add winners for this item first.");await ensurePh([w.ID]);closeModal();
  const it=items.find(x=>String(x.code)===String(code))||{item:w.ITEM,code:w.ITEM_CODE,category:w.CATEGORY,section:w.SECTION},t=settings.POSTER_TEMPLATE||"gradient";
  try{await Promise.all([document.fonts.load(`800 40px "Anek Malayalam"`,"കുരുന്നുകൾ ഒരായിരം"),document.fonts.load(`800 40px "Anek Malayalam"`,"JUNIOR GIRLS 123 abc")])}catch(e){}
- const S=1080/969,cv=document.createElement("canvas");cv.width=1080;cv.height=1427;const c=cv.getContext("2d");c.scale(S,S);c.textBaseline="middle";
- let _s=11;const rnd=()=>(_s=(_s*16807)%2147483647)/2147483647;
- c.fillStyle="#fff";c.fillRect(0,0,970,1281);
- c.save();c.strokeStyle="rgba(190,195,205,.22)";c.lineWidth=22;c.lineCap="round";[[40,120,70],[70,330,90],[30,560,60],[60,820,80],[40,1020,70]].forEach(a=>{c.beginPath();c.arc(a[0],a[1],a[2],.5,5.2);c.stroke()});c.restore();
- confetti(c,rnd);ribbon(c);
- balloon(c,925,285,62,78,"#a21caf","#e879f9");balloon(c,895,445,60,74,"#5fb02a","#b9f27c");balloon(c,905,575,52,60,"#e11d2e","#ff7b86");
- const lg=await loadImg(fixUrl(settings.LOGO_URL)||LOGO0);if(lg){const k=Math.min(345/lg.width,235/lg.height);c.drawImage(lg,135+(345-lg.width*k)/2,228+(235-lg.height*k)/2,lg.width*k,lg.height*k)}
- const cat=String(it.category||"").toUpperCase(),sec=String(it.section||"").toUpperCase();sticker(c,597,362,105,cat||sec,cat&&sec?sec:"");
- const pg=c.createLinearGradient(195,0,785,0);pg.addColorStop(0,"#ff9d1c");pg.addColorStop(1,"#f43f0c");c.fillStyle=pg;rrp(c,195,468,590,69,35);c.fill();
- c.fillStyle="#fff";c.textAlign="center";fit(c,it.item,540,50,20);c.fillText(it.item,490,504);
- const X=[128,372,617],CW=233,CY=582,CH=273,off=[12,43,17];
- for(let n=1;n<=3;n++){const x=X[n-1],nm=w["WINNER_"+n+"_NAME"],ph=w["WINNER_"+n+"_CANDIDATE_PHOTO"],md=w["WINNER_"+n+"_MADRASA"];
-  c.fillStyle="#f0f0f0";c.fillRect(x,CY,CW,CH);if(nm&&ph){const im=await loadImg(ph);if(im)cover(c,im,x,CY,CW,CH)}
-  c.strokeStyle="#cfe3e0";c.lineWidth=1.5;c.strokeRect(x,CY,CW,CH);medal(c,x+off[n-1],CY+14,n);
-  if(nm){c.textAlign="center";c.fillStyle="#d8101c";fit(c,nm,CW+20,21,11);c.fillText(nm,x+CW/2,873);c.fillStyle="#111";fit(c,md||"",CW+20,17,10);c.fillText(md||"",x+CW/2,894)}}
- const l1=c.createLinearGradient(45,0,560,0);l1.addColorStop(0,"#e11d2e");l1.addColorStop(1,"#ff8a00");c.fillStyle=l1;c.beginPath();c.moveTo(45,963);c.lineTo(410,943);c.lineTo(560,962);c.closePath();c.fill();
- const l2=c.createLinearGradient(400,0,905,0);l2.addColorStop(0,"#ff9800");l2.addColorStop(1,"#ffd54f");c.fillStyle=l2;c.beginPath();c.moveTo(400,959);c.lineTo(905,948);c.lineTo(900,953);c.lineTo(500,963);c.closePath();c.fill();
- c.textAlign="left";c.fillStyle="#111";["മത്സരത്തിൽ","പങ്കാളികളായ","എല്ലാ പ്രിയ","കൂട്ടുകാർക്കും"].forEach((s,i)=>{fit(c,s,190,28,14,900);c.fillText(s,200,1004+i*31)});
- c.save();c.globalAlpha=.9;c.fillStyle="#4caf50";c.beginPath();c.arc(528,1022,38,0,7);c.fill();c.fillStyle="#fbc02d";c.beginPath();c.ellipse(455,1078,62,50,0,0,7);c.fill();c.fillStyle="#ff7043";c.beginPath();c.ellipse(805,1085,36,28,0,0,7);c.fill();c.restore();
- c.textAlign="center";c.fillStyle="#111";fit(c,"ഒരായിരം",360,60,24,900);c.fillText("ഒരായിരം",610,1042);fit(c,"അഭിനന്ദനങ്ങൾ",470,64,24,900);c.fillText("അഭിനന്ദനങ്ങൾ",625,1098);
- const fg=c.createLinearGradient(0,1130,0,1187);fg.addColorStop(0,"#2f7d32");fg.addColorStop(1,"#1b4d1e");c.fillStyle=fg;c.fillRect(150,1130,697,57);c.strokeStyle="#7bb67e";c.lineWidth=1.5;c.strokeRect(150,1130,697,57);
- const ft=(settings.FOOTER_TEXT&&settings.FOOTER_TEXT!=="MUSABAQA WINNERS")?settings.FOOTER_TEXT:"ടീം മുസാബഖ തളിപ്പറമ്പ റെയ്ഞ്ച്";c.fillStyle="#ffd54f";fit(c,ft,650,34,16,800);c.fillText(ft,498,1159);
- c.fillStyle="#3b6ea5";c.fillRect(0,1240,38,2);c.fillRect(931,1240,38,2);
+ const S=1080/969,cv=document.createElement("canvas");cv.width=1080;cv.height=1427;const c=cv.getContext("2d");c.scale(S,S);c.textBaseline="middle";c.textAlign="center";
+ let _s=31;const rnd=()=>(_s=(_s*16807)%2147483647)/2147483647;posterBg(c,rnd);
+ c.save();c.shadowColor="rgba(60,20,90,.25)";c.shadowBlur=22;c.shadowOffsetY=8;c.fillStyle="#fff";rrp(c,60,215,400,240,34);c.fill();c.restore();c.strokeStyle="#00a7a0";c.lineWidth=3;rrp(c,60,215,400,240,34);c.stroke();
+ const lg=await loadImg(fixUrl(settings.LOGO_URL)||LOGO0);if(lg){const k=Math.min(365/lg.width,205/lg.height);c.drawImage(lg,260-lg.width*k/2,335-lg.height*k/2,lg.width*k,lg.height*k)}
+ const cat=String(it.category||"").toUpperCase(),sec=String(it.section||"").toUpperCase();badge(c,655,335,112,cat||sec,cat&&sec?sec:"");
+ c.fillStyle="#6a1b9a";[[112,492,170,556,132,524],[858,492,800,556,838,524]].forEach(a=>{c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(a[2],a[1]);c.lineTo(a[2],a[3]);c.lineTo(a[0],a[3]);c.lineTo(a[4],a[5]);c.closePath();c.fill()});
+ c.save();c.shadowColor="rgba(60,20,90,.35)";c.shadowBlur=14;c.shadowOffsetY=5;const bg=c.createLinearGradient(150,0,820,0);bg.addColorStop(0,"#d81b60");bg.addColorStop(1,"#6a1b9a");c.fillStyle=bg;c.fillRect(150,478,670,70);c.restore();
+ c.fillStyle="#f7b500";c.fillRect(150,478,670,4);c.fillRect(150,544,670,4);c.fillStyle="#fff";fit(c,it.item,600,50,20);c.fillText(it.item,485,514);
+ const X=[107,365,623];for(let n=1;n<=3;n++)await card(c,n,X[n-1],592,236,262,w["WINNER_"+n+"_NAME"],w["WINNER_"+n+"_CANDIDATE_PHOTO"],w["WINNER_"+n+"_MADRASA"]);
+ const wv=new Path2D();wv.moveTo(70,988);for(let x=70;x<=900;x+=10)wv.lineTo(x,988+Math.sin(x/22)*5);const dg=c.createLinearGradient(70,0,900,0);dg.addColorStop(0,"#00a7a0");dg.addColorStop(.5,"#d81b60");dg.addColorStop(1,"#f7b500");c.strokeStyle=dg;c.lineWidth=4;c.lineCap="round";c.stroke(wv);sparkle(c,485,988,14,"#f7b500");
+ c.save();c.globalAlpha=.85;c.fillStyle="#00a7a0";c.beginPath();c.arc(260,1050,46,0,7);c.fill();c.fillStyle="#f7b500";c.beginPath();c.arc(720,1038,38,0,7);c.fill();c.fillStyle="#ff80ab";c.beginPath();c.ellipse(520,1080,90,30,0,0,7);c.fill();c.restore();
+ const tx="ഒരായിരം അഭിനന്ദനങ്ങൾ";fit(c,tx,790,84,30,800);c.lineJoin="round";c.strokeStyle="#fff";c.lineWidth=9;c.strokeText(tx,485,1056);const tg=c.createLinearGradient(0,1020,0,1090);tg.addColorStop(0,"#d81b60");tg.addColorStop(1,"#5b1a8f");c.fillStyle=tg;c.fillText(tx,485,1056);
+ if(settings.COLLEGE_NAME){c.fillStyle="#5b1a8f";fit(c,settings.COLLEGE_NAME,700,20,12,600);c.fillText(settings.COLLEGE_NAME,485,1118)}
+ c.save();c.shadowColor="rgba(0,0,0,.3)";c.shadowBlur=14;c.shadowOffsetY=4;const fg=c.createLinearGradient(0,1150,0,1212);fg.addColorStop(0,"#0b7a74");fg.addColorStop(1,"#094743");c.fillStyle=fg;rrp(c,150,1150,670,62,31);c.fill();c.restore();c.strokeStyle="#f7b500";c.lineWidth=3;rrp(c,150,1150,670,62,31);c.stroke();
+ const ft=(settings.FOOTER_TEXT&&settings.FOOTER_TEXT!=="MUSABAQA WINNERS")?settings.FOOTER_TEXT:"ടീം മുസാബഖ കമ്പിൽ  റെയ്ഞ്ച്";c.fillStyle="#ffe08a";fit(c,ft,620,34,16);c.fillText(ft,485,1182);
  const act=[1,2,3].map(n=>({position:POS[n-1],name:w["WINNER_"+n+"_NAME"],madrasa:w["WINNER_"+n+"_MADRASA"],photo:w["WINNER_"+n+"_CANDIDATE_PHOTO"],n})).filter(x=>x.name);
  window.__d=cv.toDataURL("image/png");window.__it=it;window.__w=act;
  openModal(`<div class="head" style="margin:0 0 12px"><div><h2 style="margin:0">Poster ready</h2><p>${esc(it.item)} • ${esc(it.code)}</p></div><button class="btn ic" onclick="closeModal()">${ic("x")}</button></div><img class="poster" src="${window.__d}" alt=""><div class="acts" style="margin-top:14px"><button class="btn pri" onclick="dlPoster()">${ic("dl")} Download</button><button class="btn ok" onclick="shPoster()">${ic("share")} Share</button><button class="btn" onclick="waPoster()">${ic("wa")} WhatsApp</button></div>`);
