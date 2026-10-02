@@ -189,11 +189,11 @@ const blk=n=>`<div class="card"><h3 style="margin:0 0 10px">${MEDAL[n-1]} ${POS[
 function choices(){const s=($("wis").value||"").toLowerCase();$("ch").innerHTML=items.filter(x=>[x.item,x.code,x.category,x.section].join(" ").toLowerCase().includes(s)).slice(0,8).map(x=>`<div class="pick" onclick="chooseItem(${q(x.code)})"><b>${esc(x.item)}</b> — ${esc(x.code)} ${wmap[x.code]?'<span class="tag done">announced</span>':""}<div class="mu">${esc(x.category)} • ${esc(x.section)} • ${esc(x.type)}</div></div>`).join("")}
 function chooseItem(c){if(wmap[c]&&!editId)return editWinner(wmap[c].ID);selItem=items.find(x=>String(x.code)===String(c));$("wis").value=selItem.item+" — "+selItem.code;$("ch").innerHTML="";meta()}
 function meta(){$("sm").innerHTML=selItem?`<div class="meta">${[["CATEGORY",selItem.category],["SECTION",selItem.section],["TYPE",selItem.type],["CODE",selItem.code],["LIMIT",selItem.limit]].map(m=>`<div><small>${m[0]}</small><b>${esc(m[1])}</b></div>`).join("")}</div>`:""}
-function mdet(n){const v=$("wm"+n).value,m=madrasas.find(x=>String(x.id)===v);$("md"+n).innerHTML=m?`Reg.No: <b>${esc(m.regNo||"—")}</b><br>${esc(m.address||"")}`:(v.startsWith("txt:")?"Taken from Candidates sheet (not in Madrasa list)":"")}
+function mdet(n){const v=$("wm"+n).value,m=madrasas.find(x=>String(x.id)===v);$("md"+n).innerHTML=m?`Reg.No: <b>${esc(m.regNo||"—")}</b><br>${esc(m.address||"")}`:(v.startsWith("txt:")?"":"")}
 function setMad(n,name){const sel=$("wm"+n);sel.querySelectorAll("option[data-x]").forEach(o=>o.remove());name=String(name||"").trim();if(!name){sel.value="";mdet(n);return}
  const P=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,""),S=s=>P(String(s).toLowerCase().replace(/madrass?a+h?/g,"")),p=P(name),s=S(name);
  const m=madrasas.find(x=>P(x.madrasa)===p)||(s&&madrasas.find(x=>S(x.madrasa)===s))||(s.length>3&&madrasas.find(x=>{const y=S(x.madrasa);return y.length>3&&(y.includes(s)||s.includes(y))}));
- if(m)sel.value=m.id;else{const o=document.createElement("option");o.value="txt:"+name;o.textContent=name+" (from candidates)";o.dataset.x=1;sel.appendChild(o);sel.value=o.value}
+ if(m)sel.value=m.id;else{const o=document.createElement("option");o.value="txt:"+name;o.textContent=name+" ";o.dataset.x=1;sel.appendChild(o);sel.value=o.value}
  mdet(n)}
 function showPv(n){$("pv"+n).innerHTML=photos[n]?`<img src="${photos[n]}" alt=""><button class="btn sm" onclick="photos[${n}]='';showPv(${n})">Remove</button>`:""}
 async function pickPhoto(n,inp){const f=inp.files[0];inp.value="";if(!f)return;if(!f.type.startsWith("image/"))return toast("Please choose an image.");
@@ -272,7 +272,7 @@ async function poster(code,save=true){const w=wmap[code];if(!w)return toast("Add
  const S=1080/969,cv=document.createElement("canvas");cv.width=1080;cv.height=1427;const c=cv.getContext("2d");c.scale(S,S);c.textBaseline="middle";c.textAlign="center";
  let _s=31;const rnd=()=>(_s=(_s*16807)%2147483647)/2147483647;posterBg(c,rnd);
  c.save();c.shadowColor="rgba(60,20,90,.25)";c.shadowBlur=22;c.shadowOffsetY=8;c.fillStyle="#fff";rrp(c,45,40,510,375,34);c.fill();c.restore();
- const lg=await loadImg(POSTER_LOGO||fixUrl(settings.LOGO_URL)||LOGO0);if(lg){const k=Math.min(480/lg.width,347/lg.height);c.drawImage(lg,300-lg.width*k/2,227-lg.height*k/2,lg.width*k,lg.height*k)}c.strokeStyle="#00a7a0";c.lineWidth=3;rrp(c,45,40,510,375,34);c.stroke();
+ const lg=await loadImg(POSTER_LOGO||fixUrl(settings.LOGO_URL)||LOGO0);if(lg){const k=Math.min(480/lg.width,347/lg.height);c.drawImage(lg,300-lg.width*k/2,227-lg.height*k/2,lg.width*k,lg.height*k)}
  const cat=String(it.category||"").toUpperCase(),sec=String(it.section||"").toUpperCase();badge(c,775,362,105,cat||sec,cat&&sec?sec:"");
  c.fillStyle="#6a1b9a";[[112,492,170,556,132,524],[858,492,800,556,838,524]].forEach(a=>{c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(a[2],a[1]);c.lineTo(a[2],a[3]);c.lineTo(a[0],a[3]);c.lineTo(a[4],a[5]);c.closePath();c.fill()});
  c.save();c.shadowColor="rgba(60,20,90,.35)";c.shadowBlur=14;c.shadowOffsetY=5;const bg=c.createLinearGradient(150,0,820,0);bg.addColorStop(0,"#d81b60");bg.addColorStop(1,"#6a1b9a");c.fillStyle=bg;c.fillRect(150,478,670,70);c.restore();
