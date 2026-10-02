@@ -54,7 +54,7 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;bo
 </style>
 </head>
 <body>
-<div id="loginView" class="login hidden"><div class="lb"><img id="loginLogo" alt=""><h2>MUSABAQA WINNERS</h2><p>Admin &amp; Poster Manager</p>
+<div id="loginView" class="login hidden"><div class="lb"><img id="loginLogo" alt=""><h2>MUSABAQA WINNERS</h2><p>Admin;Poster Manager</p>
 <form id="loginForm"><div class="fld"><label>USERNAME</label><input class="in" id="lu" autocomplete="username" required></div><div class="fld"><label>PASSWORD</label><input class="in" id="lp" type="password" autocomplete="current-password" required></div><button class="btn pri" id="lbtn" style="width:100%;margin-top:6px">Sign in</button></form></div></div>
 
 <div id="appView" class="hidden">
@@ -73,7 +73,7 @@ const I={home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',list:'<path d="M8 6h13M8
 const ic=(n,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
 const NAV=[["dashboard","home","Home"],["items","list","Items"],["winners","trophy","Winners"],["posters","image","Posters"],["settings","gear","Settings"]];
 const $=id=>document.getElementById(id);
-const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":";","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const q=v=>esc(JSON.stringify(String(v)));
 let token=localStorage.getItem("musabaqa_session")||"",items=[],winners=[],madrasas=[],posters=[],settings={},page="dashboard",editId=null,selItem=null,wmap={};
 const photos={1:"",2:"",3:""};
@@ -135,8 +135,11 @@ function cs(n){const box=$("cr"+n),v=$("wn"+n).value.trim().toLowerCase();if(!v)
  const code=selItem?String(selItem.code).toLowerCase():"",nm=selItem?String(selItem.item).toLowerCase():"";
  const reg=c=>!!selItem&&c._t.some(t=>t===code||t===nm||(nm.length>3&&(t.includes(nm)||nm.includes(t)&&t.length>3)));const r=[];
  cands.forEach((c,i)=>{if(!c._k.includes(v))return;const ch=String(c.chest).toLowerCase();r.push([i,reg(c)?1:0,ch===v?0:(ch.startsWith(v)||c._k.startsWith(v))?1:2])});
- r.sort((a,b)=>((a[2]===0)!==(b[2]===0))?a[2]-b[2]:(b[1]-a[1])||(a[2]-b[2]));
+ r.sort((a,b)=>((a[2]===0)!==(b[2]===0))?a[2]-b[2]:(b[1]-a[1])||(a[2]-b[2]));(cs.r=cs.r||{})[n]=r;
  box.innerHTML=r.slice(0,8).map(x=>{const c=cands[x[0]];return`<div class="pick" onclick="pickCand(${n},${x[0]})"><b>${esc(c.student)}</b> ${c.chest?`<span class="tag">#${esc(c.chest)}</span>`:""} ${x[1]?'<span class="tag done">Registered</span>':""}<div class="mu">${esc(c.madrassa)} • ${esc(c.cls)}${c.section?" • "+esc(c.section):""}${c.reg?" • Reg "+esc(c.reg):""}</div>${c.items?`<div class="mu" style="font-size:11px">${esc(c.items).slice(0,90)}</div>`:""}</div>`}).join("")||'<div class="mu" style="padding:8px">No candidate found — you can still type the name manually.</div>'}
+function autoPick(n,force){setTimeout(()=>{const inp=$("wn"+n);if(!inp||!candsOk)return;const v=inp.value.trim().toLowerCase();if(!v)return;
+ const m=[];cands.forEach((c,i)=>{if(String(c.chest).trim().toLowerCase()===v||String(c.student).trim().toLowerCase()===v)m.push(i)});
+ if(m.length===1)pickCand(n,m[0]);else if(force){const r=(cs.r&&cs.r[n])||[];if(r.length)pickCand(n,r[0][0])}},force?0:250)}
 function pickCand(n,i){const c=cands[i];if(!c)return;$("wn"+n).value=c.student;$("cr"+n).innerHTML="";
  setMad(n,c.madrassa)}
 function chrome(){$("side").innerHTML=NAV.map(n=>`<button class="nav" data-p="${n[0]}">${ic(n[1])}${n[2]}</button>`).join("");$("mnav").innerHTML=NAV.map(n=>`<button data-p="${n[0]}">${ic(n[1],20)}${n[2]}</button>`).join("");
@@ -156,7 +159,7 @@ const cnt=n=>winners.filter(w=>w["WINNER_"+n+"_NAME"]).length;
 const stat=(i,n,l)=>`<div class="card stat"><div class="ico">${i}</div><div><b>${n}</b><span>${l}</span></div></div>`;
 function dashboard(){
  const a=cnt(1),b=cnt(2),c=cnt(3),done=winners.length,pct=items.length?Math.round(done/items.length*100):0;
- $("page").innerHTML=`<div class="hero"><h2>${esc(settings.EVENT_NAME||"MUSABAQA")} ${esc(settings.EVENT_YEAR||"")}</h2><p>${esc(settings.COLLEGE_NAME||"Winners &amp; Poster Manager")} — ${done} of ${items.length} items announced (${pct}%)</p><div class="acts"><button class="btn" onclick="openForm()">${ic("plus")} Add winners</button><button class="btn" onclick="pickPoster()">${ic("image")} Create poster</button></div></div>
+ $("page").innerHTML=`<div class="hero"><h2>${esc(settings.EVENT_NAME||"MUSABAQA")} ${esc(settings.EVENT_YEAR||"")}</h2><p>${esc(settings.COLLEGE_NAME||"Winners ; Poster Manager")} — ${done} of ${items.length} items announced (${pct}%)</p><div class="acts"><button class="btn" onclick="openForm()">${ic("plus")} Add winners</button><button class="btn" onclick="pickPoster()">${ic("image")} Create poster</button></div></div>
  <div class="grid g4">${stat("📋",items.length,"ITEMS")}${stat("🏆",a+b+c,"WINNERS")}${stat("🥇",a,"1ST PLACE")}${stat("🖼",posters.length,"POSTERS")}</div>
  <h3 style="margin:22px 0 10px">Recently announced</h3><div class="grid g3 w">${winners.slice().sort((x,y)=>String(y.CREATED_AT).localeCompare(String(x.CREATED_AT))).slice(0,6).map(wCard).join("")||'<div class="empty card" style="grid-column:1/-1">No winners yet. Add your first result.</div>'}</div>`}
 
@@ -181,15 +184,15 @@ function openForm(code=""){loadCands();const ex=code&&wmap[code];if(ex)return ed
  openModal(`<div class="head" style="margin:0 0 12px"><div><h2 style="margin:0" id="ft">Add winners</h2><p>Select an item, then fill the podium.</p></div><button class="btn ic" onclick="closeModal()">${ic("x")}</button></div>
  <div class="fld"><label>COMPETITION ITEM</label><input class="in" id="wis" placeholder="Search item, code, category…" autocomplete="off" oninput="choices()" value="${selItem?esc(selItem.item+" — "+selItem.code):""}"><div id="ch"></div></div><div id="sm"></div>
  <div class="up">${[1,2,3].map(blk).join("")}</div><div class="acts" style="margin-top:16px"><button class="btn pri" id="sv" onclick="saveWinner()">Save winners</button><button class="btn" onclick="closeModal()">Cancel</button></div>`);meta();if(!selItem)choices()}
-const blk=n=>`<div class="card"><h3 style="margin:0 0 10px">${MEDAL[n-1]} ${POS[n-1]}</h3><div class="fld"><label>CANDIDATE (NAME OR CHEST NO)</label><input class="in" id="wn${n}" placeholder="Search name or chest no…" autocomplete="off" oninput="cs(${n})"><div class="cres" id="cr${n}"></div></div><div class="fld"><label>MADRASA</label><select class="in" id="wm${n}" onchange="mdet(${n})"><option value="">Select madrasa</option>${madrasas.map(m=>`<option value="${esc(m.id)}">${esc(m.madrasa)}</option>`).join("")}</select><div id="md${n}" class="mu" style="margin-top:6px;font-size:12px"></div></div><div class="fld"><label>PHOTO</label><input class="in" style="padding:10px 12px" id="wf${n}" type="file" accept="image/*" onchange="pickPhoto(${n},this)"><div class="pv" id="pv${n}"></div></div></div>`;
+const blk=n=>`<div class="card"><h3 style="margin:0 0 10px">${MEDAL[n-1]} ${POS[n-1]}</h3><div class="fld"><label>CANDIDATE (NAME OR CHEST NO)</label><input class="in" id="wn${n}" placeholder="Search name or chest no…" autocomplete="off" oninput="cs(${n})" onchange="autoPick(${n})" onkeydown="if(event.key==='Enter'){event.preventDefault();autoPick(${n},1)}"><div class="cres" id="cr${n}"></div></div><div class="fld"><label>MADRASA</label><select class="in" id="wm${n}" onchange="mdet(${n})"><option value="">Select madrasa</option>${madrasas.map(m=>`<option value="${esc(m.id)}">${esc(m.madrasa)}</option>`).join("")}</select><div id="md${n}" class="mu" style="margin-top:6px;font-size:12px"></div></div><div class="fld"><label>PHOTO</label><input class="in" style="padding:10px 12px" id="wf${n}" type="file" accept="image/*" onchange="pickPhoto(${n},this)"><div class="pv" id="pv${n}"></div></div></div>`;
 function choices(){const s=($("wis").value||"").toLowerCase();$("ch").innerHTML=items.filter(x=>[x.item,x.code,x.category,x.section].join(" ").toLowerCase().includes(s)).slice(0,8).map(x=>`<div class="pick" onclick="chooseItem(${q(x.code)})"><b>${esc(x.item)}</b> — ${esc(x.code)} ${wmap[x.code]?'<span class="tag done">announced</span>':""}<div class="mu">${esc(x.category)} • ${esc(x.section)} • ${esc(x.type)}</div></div>`).join("")}
 function chooseItem(c){if(wmap[c]&&!editId)return editWinner(wmap[c].ID);selItem=items.find(x=>String(x.code)===String(c));$("wis").value=selItem.item+" — "+selItem.code;$("ch").innerHTML="";meta()}
 function meta(){$("sm").innerHTML=selItem?`<div class="meta">${[["CATEGORY",selItem.category],["SECTION",selItem.section],["TYPE",selItem.type],["CODE",selItem.code],["LIMIT",selItem.limit]].map(m=>`<div><small>${m[0]}</small><b>${esc(m[1])}</b></div>`).join("")}</div>`:""}
-function mdet(n){const v=$("wm"+n).value,m=madrasas.find(x=>String(x.id)===v);$("md"+n).innerHTML=m?`Reg.No: <b>${esc(m.regNo||"—")}</b><br>${esc(m.address||"")}`:(v.startsWith("txt:")?"Taken from Candidates sheet (not in Madrasa list)":"")}
+function mdet(n){const v=$("wm"+n).value,m=madrasas.find(x=>String(x.id)===v);$("md"+n).innerHTML=m?`Reg.No: <b>${esc(m.regNo||"—")}</b><br>${esc(m.address||"")}`:(v.startsWith("txt:")?"":"")}
 function setMad(n,name){const sel=$("wm"+n);sel.querySelectorAll("option[data-x]").forEach(o=>o.remove());name=String(name||"").trim();if(!name){sel.value="";mdet(n);return}
  const P=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,""),S=s=>P(String(s).toLowerCase().replace(/madrass?a+h?/g,"")),p=P(name),s=S(name);
  const m=madrasas.find(x=>P(x.madrasa)===p)||(s&&madrasas.find(x=>S(x.madrasa)===s))||(s.length>3&&madrasas.find(x=>{const y=S(x.madrasa);return y.length>3&&(y.includes(s)||s.includes(y))}));
- if(m)sel.value=m.id;else{const o=document.createElement("option");o.value="txt:"+name;o.textContent=name+" (from candidates)";o.dataset.x=1;sel.appendChild(o);sel.value=o.value}
+ if(m)sel.value=m.id;else{const o=document.createElement("option");o.value="txt:"+name;o.textContent=name+" ";o.dataset.x=1;sel.appendChild(o);sel.value=o.value}
  mdet(n)}
 function showPv(n){$("pv"+n).innerHTML=photos[n]?`<img src="${photos[n]}" alt=""><button class="btn sm" onclick="photos[${n}]='';showPv(${n})">Remove</button>`:""}
 async function pickPhoto(n,inp){const f=inp.files[0];inp.value="";if(!f)return;if(!f.type.startsWith("image/"))return toast("Please choose an image.");
@@ -290,7 +293,7 @@ async function poster(code,save=true){const w=wmap[code];if(!w)return toast("Add
  c.save();c.globalAlpha=.9;c.fillStyle="#4caf50";c.beginPath();c.arc(528,1022,38,0,7);c.fill();c.fillStyle="#fbc02d";c.beginPath();c.ellipse(455,1078,62,50,0,0,7);c.fill();c.fillStyle="#ff7043";c.beginPath();c.ellipse(805,1085,36,28,0,0,7);c.fill();c.restore();
  c.textAlign="center";c.fillStyle="#111";fit(c,"ഒരായിരം",360,60,24,900);c.fillText("ഒരായിരം",610,1042);fit(c,"അഭിനന്ദനങ്ങൾ",470,64,24,900);c.fillText("അഭിനന്ദനങ്ങൾ",625,1098);
  const fg=c.createLinearGradient(0,1130,0,1187);fg.addColorStop(0,"#2f7d32");fg.addColorStop(1,"#1b4d1e");c.fillStyle=fg;c.fillRect(150,1130,697,57);c.strokeStyle="#7bb67e";c.lineWidth=1.5;c.strokeRect(150,1130,697,57);
- const ft=(settings.FOOTER_TEXT&&settings.FOOTER_TEXT!=="MUSABAQA WINNERS")?settings.FOOTER_TEXT:"ടീം മുസാബഖ — ശ്രീകണ്ഠപുരം റെയ്ഞ്ച്";c.fillStyle="#ffd54f";fit(c,ft,650,34,16,800);c.fillText(ft,498,1159);
+ const ft=(settings.FOOTER_TEXT&&settings.FOOTER_TEXT!=="MUSABAQA WINNERS")?settings.FOOTER_TEXT:"ടീം മുസാബഖ തളിപ്പറമ്പ റെയ്ഞ്ച്";c.fillStyle="#ffd54f";fit(c,ft,650,34,16,800);c.fillText(ft,498,1159);
  c.fillStyle="#3b6ea5";c.fillRect(0,1240,38,2);c.fillRect(931,1240,38,2);
  const act=[1,2,3].map(n=>({position:POS[n-1],name:w["WINNER_"+n+"_NAME"],madrasa:w["WINNER_"+n+"_MADRASA"],photo:w["WINNER_"+n+"_CANDIDATE_PHOTO"],n})).filter(x=>x.name);
  window.__d=cv.toDataURL("image/png");window.__it=it;window.__w=act;
