@@ -160,7 +160,7 @@ const cnt=n=>winners.filter(w=>w["WINNER_"+n+"_NAME"]).length;
 const stat=(i,n,l)=>`<div class="card stat"><div class="ico">${i}</div><div><b>${n}</b><span>${l}</span></div></div>`;
 function dashboard(){
  const a=cnt(1),b=cnt(2),c=cnt(3),done=winners.length,pct=items.length?Math.round(done/items.length*100):0;
- $("page").innerHTML=`<div class="hero"><h2>${esc(settings.EVENT_NAME||"MUSABAQA")} ${esc(settings.EVENT_YEAR||"")}</h2><p>${esc(settings.COLLEGE_NAME||"Winners &amp; Poster Manager")} — ${done} of ${items.length} items announced (${pct}%)</p><div class="acts"><button class="btn" onclick="openForm()">${ic("plus")} Add winners</button><button class="btn" onclick="pickPoster()">${ic("image")} Create poster</button></div></div>
+ $("page").innerHTML=`<div class="hero"><h2>${esc(settings.EVENT_NAME||"MUSABAQA")} ${esc(settings.EVENT_YEAR||"")}</h2><p>${esc(settings.COLLEGE_NAME||"Winners ; Poster Manager")} — ${done} of ${items.length} items announced (${pct}%)</p><div class="acts"><button class="btn" onclick="openForm()">${ic("plus")} Add winners</button><button class="btn" onclick="pickPoster()">${ic("image")} Create poster</button></div></div>
  <div class="grid g4">${stat("📋",items.length,"ITEMS")}${stat("🏆",a+b+c,"WINNERS")}${stat("🥇",a,"1ST PLACE")}${stat("🖼",posters.length,"POSTERS")}</div>
  <h3 style="margin:22px 0 10px">Recently announced</h3><div class="grid g3 w">${winners.slice().sort((x,y)=>String(y.CREATED_AT).localeCompare(String(x.CREATED_AT))).slice(0,6).map(wCard).join("")||'<div class="empty card" style="grid-column:1/-1">No winners yet. Add your first result.</div>'}</div>`}
 
